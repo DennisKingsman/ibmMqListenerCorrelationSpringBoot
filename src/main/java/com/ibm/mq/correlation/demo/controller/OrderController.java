@@ -4,6 +4,7 @@ import com.ibm.mq.correlation.demo.model.OrderRequest;
 import com.ibm.mq.jms.MQQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
@@ -18,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 @RequestMapping("/ibm/mq/")
 public class OrderController {
 
+    @Value("${reply.queue}")
+    private String replyQueue;
     private JmsTemplate jmsTemplate;
 
     @Autowired
@@ -28,11 +31,11 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<String> createOrder(@RequestBody OrderRequest order) throws JMSException {
         log.info("### 1 ### Order Service sending order message '{}' to the queue", order.getMessage());
-        log.info("Order identifier is '{}'", order.getIdentifier());
+        //todo rename queue
         MQQueue orderRequestQueue = new MQQueue("DEV.QUEUE.1");
         jmsTemplate.convertAndSend(orderRequestQueue, order.getMessage(), textMessage -> {
             textMessage.setJMSCorrelationID(order.getIdentifier());
-            log.info("destination is '{}'", textMessage.getJMSDestination());
+            textMessage.setJMSReplyTo(new MQQueue(replyQueue));
             return textMessage;
         });
         return new ResponseEntity(order, HttpStatus.ACCEPTED);
