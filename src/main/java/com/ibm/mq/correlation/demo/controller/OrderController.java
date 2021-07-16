@@ -9,10 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.charset.StandardCharsets;
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RestController
@@ -55,6 +54,7 @@ public class OrderController {
 
     // You could use Apache Commons Codec library instead
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes();
+
     public static String bytesToHex(byte[] bytes) {
         byte[] hexChars = new byte[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
