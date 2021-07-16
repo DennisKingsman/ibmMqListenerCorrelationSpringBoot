@@ -12,7 +12,8 @@ import javax.jms.TextMessage;
 @Component
 public class OrderResponseListener {
 
-    @JmsListener(destination = "DEV.QUEUE.1")
+    //earlier it was DEV.QUEUE.1 when corId to corId
+    @JmsListener(destination = "DEV.QUEUE.2")
     public void receive(Message message) throws JMSException {
         TextMessage textMessage = (TextMessage) message;
         log.info("### 4 ### Order Service received message response : {} with correlation id: {}",

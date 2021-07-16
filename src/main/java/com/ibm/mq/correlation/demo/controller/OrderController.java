@@ -10,6 +10,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 
@@ -28,10 +29,11 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<String> createOrder(@RequestBody OrderRequest order) throws JMSException {
         log.info("### 1 ### Order Service sending order message '{}' to the queue", order.getMessage());
-
+        log.info("Order identifier is '{}'", order.getIdentifier());
         MQQueue orderRequestQueue = new MQQueue("DEV.QUEUE.1");
         jmsTemplate.convertAndSend(orderRequestQueue, order.getMessage(), textMessage -> {
             textMessage.setJMSCorrelationID(order.getIdentifier());
+            log.info("destination is '{}'", textMessage.getJMSDestination());
             return textMessage;
         });
         return new ResponseEntity(order, HttpStatus.ACCEPTED);
